@@ -1,0 +1,29 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABSE}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p1234"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  adminer:
+    image: adminer:latest
+    ports:
+      - 8081:${APP_PORT}
+    depends_on:
+      db:
+          condition: service_healthy
+  redis:
+    image: redis:7-alpine
+  whoami:
+    image: traefik/whoami
+    ports:
+      - "3000:80"
+volumes:
+  db_data:
+
